@@ -14,15 +14,15 @@
 <h1 id="注册一个GitHub-x2F-Gitee账号"><a href="#注册一个GitHub-x2F-Gitee账号" class="headerlink" title="注册一个GitHub&#x2F;Gitee账号"></a>注册一个GitHub&#x2F;Gitee账号</h1><p>作为全球最大的开源平台，GitHub不仅提供奇奇怪怪的项目，也提供一个免费的静态网站平台。</p>
 <p>Gitee是国内网站，相对于Github来讲上起来会快很多。</p>
 <h2 id="01，用邮箱注册一个账号；"><a href="#01，用邮箱注册一个账号；" class="headerlink" title="01，用邮箱注册一个账号；"></a>01，用邮箱注册一个账号；</h2><p>这，不会有人不会吧……</p>
-<h2 id="02，在个人那里开一个新仓库；"><a href="#02，在个人那里开一个新仓库；" class="headerlink" title="02，在个人那里开一个新仓库；"></a>02，在个人那里开一个新仓库；</h2><p><img src="/.io//1664880739642.png" alt="1664880739642"></p>
+<h2 id="02，在个人那里开一个新仓库；"><a href="#02，在个人那里开一个新仓库；" class="headerlink" title="02，在个人那里开一个新仓库；"></a>02，在个人那里开一个新仓库；</h2><p><img src="/.io//1664880739642.png"><img src="/.io//hello-world/1664885507314.png" alt="1664885507314"></p>
 <p>点击那里去创建</p>
-<p><img src="/.io//1664880968283.png" alt="1664880968283"></p>
+<p><img src="/.io//1664880968283.png"><img src="/.io//hello-world/1664885519778.png" alt="1664885519778"></p>
 <p>然后<strong>仓库名称必须填写xxxx.github.io（xxxx随便发挥）</strong></p>
 <p>剩下的默认就行，想改亦可</p>
 <p>点击Create ——  <em><del>懒得打字了</del></em></p>
-<h2 id="03，获取一个token"><a href="#03，获取一个token" class="headerlink" title="03，获取一个token"></a>03，获取一个token</h2><p><img src="/.io//1664881230808.png" alt="1664881230808"></p>
+<h2 id="03，获取一个token"><a href="#03，获取一个token" class="headerlink" title="03，获取一个token"></a>03，获取一个token</h2><p><img src="/.io//1664881230808.png"><img src="/.io//hello-world/1664885535512.png" alt="1664885535512"></p>
 <p>找到个人那里的setting</p>
-<p><img src="/.io//1664881621301.png" alt="1664881621301"></p>
+<p><img src="/.io//1664881621301.png"><img src="/.io//hello-world/1664885545786.png" alt="1664885545786"></p>
 <p>跟着上面的路径找到这个，点击create new token；</p>
 <p>然后在后面页面全选，时长选不限；</p>
 <p>复制下来token（那串乱码）好好藏起来，上传要用；</p>
