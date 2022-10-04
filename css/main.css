@@ -2843,7 +2843,9 @@ body {
   background-color: transparent;
   opacity: 0.9;
 }
-​,
 .header-inner {
   opacity: 0.9;
+}
+.post-toc .nav .nav-child {
+  display: block;
 }
