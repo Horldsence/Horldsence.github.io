@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace('${hits}', data.nbHits)
             .replace('${time}', data.processingTimeMS);
           return `<span>${stats}</span>
-            <img src="/js/third-party/search/algolia-search/logo-algolia-nebula-blue-full.svg" alt="Algolia">`;
+            <img src="${CONFIG.images}/logo-algolia-nebula-blue-full.svg" alt="Algolia">`;
         }
       },
       cssClasses: {
