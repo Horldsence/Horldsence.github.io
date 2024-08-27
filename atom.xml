@@ -6,7 +6,7 @@
   <link href="https://horldsence.github.io/atom.xml" rel="self"/>
   
   <link href="https://horldsence.github.io/"/>
-  <updated>2024-08-26T12:47:32.777Z</updated>
+  <updated>2024-08-27T05:21:58.639Z</updated>
   <id>https://horldsence.github.io/</id>
   
   <author>
@@ -17,18 +17,18 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>Hello World</title>
+    <title>欢迎来到311实验室的网站！</title>
     <link href="https://horldsence.github.io/2024/08/26/hello-world/"/>
     <id>https://horldsence.github.io/2024/08/26/hello-world/</id>
     <published>2024-08-26T12:47:32.775Z</published>
-    <updated>2024-08-26T12:47:32.777Z</updated>
+    <updated>2024-08-27T05:21:58.639Z</updated>
     
-    <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
+    <content type="html"><![CDATA[<h2 id="311实验室2023届纳新啦！！！"><a href="#311实验室2023届纳新啦！！！" class="headerlink" title="311实验室2023届纳新啦！！！"></a>311实验室2023届纳新啦！！！</h2><p>   如果你热爱电子创作，渴望提前学习编程知识，想参加各类比赛，提升团队建设能力。那么这里将是属于你的成长空间:理论知识+动手操作。在这里，我们将与时间赛跑，与数据争锋，与理论齐头并进。欢迎你们加入311实验室，我们希望与你们一起共同探索学习电子科技的乐趣与奥秘。<br>  欢迎各位2022、2023级的宝子们扫描海报上的二维码加入我们，更多纳新咨询将为你解答。</p>]]></content>
     
     
       
       
-    <summary type="html">&lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.io/docs/&quot;&gt;documentation&lt;/a&gt; for</summary>
+    <summary type="html">&lt;h2 id=&quot;311实验室2023届纳新啦！！！&quot;&gt;&lt;a href=&quot;#311实验室2023届纳新啦！！！&quot; class=&quot;headerlink&quot; title=&quot;311实验室2023届纳新啦！！！&quot;&gt;&lt;/a&gt;311实验室2023届纳新啦！！！&lt;/h2&gt;&lt;p&gt;   如果你热爱电子</summary>
       
     
     
