@@ -1,0 +1,115 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Card from "../components/Card.astro";
+import { getCollection } from "astro:content";
+
+const software = await getCollection("software");
+const sortedSoftware = software.sort(
+    (a: any, b: any) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<Layout title="Software Repository">
+    <div class="flex justify-between items-center mb-6">
+        <div
+            class="text-base font-extrabold text-retro-dark dark:text-retro-beige/70"
+        >
+            TOTAL_ITEMS: {software.length}
+        </div>
+        <div class="flex gap-2">
+            <span
+                class="text-base font-extrabold text-retro-dark dark:text-retro-beige/70 self-center mr-2"
+                >SORT_BY:</span
+            >
+            <button
+                id="sort-date"
+                class="pixel-btn text-sm py-1 px-2 bg-retro-dark text-retro-beige border-none cursor-pointer"
+                >DATE</button
+            >
+            <button
+                id="sort-rating"
+                class="pixel-btn text-sm py-1 px-2 bg-retro-brown text-retro-beige border-none cursor-pointer"
+                >RATING</button
+            >
+        </div>
+    </div>
+
+    <div id="software-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {
+            sortedSoftware.map((item: any) => (
+                <div
+                    class="software-item h-full"
+                    data-date={item.data.pubDate.valueOf()}
+                    data-rating={item.data.rating || 0}
+                >
+                    <Card
+                        href={`/software/${item.slug}`}
+                        title={item.data.title}
+                        description={item.data.description}
+                        icon={item.data.icon}
+                        tags={item.data.tags}
+                        rating={item.data.rating}
+                    />
+                </div>
+            ))
+        }
+    </div>
+
+    {
+        software.length === 0 && (
+            <div class="text-center py-20 pixel-card">
+                <p class="text-2xl">NO_DATA_FOUND</p>
+                <p class="mt-2">Please insert disk...</p>
+            </div>
+        )
+    }
+
+    <script>
+        const grid = document.getElementById("software-grid");
+        const btnDate = document.getElementById("sort-date");
+        const btnRating = document.getElementById("sort-rating");
+
+        function sortItems(criteria: string) {
+            if (!grid) return;
+            const items = Array.from(
+                document.querySelectorAll(".software-item"),
+            );
+            const sorted = items.sort((a, b) => {
+                const valA = parseFloat(
+                    a.getAttribute(`data-${criteria}`) || "0",
+                );
+                const valB = parseFloat(
+                    b.getAttribute(`data-${criteria}`) || "0",
+                );
+                return valB - valA; // Descending
+            });
+
+            // Clear grid and re-append with animation
+            grid.innerHTML = "";
+            sorted.forEach((item, index) => {
+                const htmlItem = item as HTMLElement;
+                htmlItem.style.animationDelay = `${index * 0.05}s`;
+                item.classList.remove("animate-pop-in");
+                void htmlItem.offsetWidth; // Trigger reflow
+                item.classList.add("animate-pop-in");
+                grid.appendChild(item);
+            });
+
+            // Update button styles
+            if (criteria === "date") {
+                btnDate?.classList.remove("bg-retro-brown");
+                btnDate?.classList.add("bg-retro-dark");
+                btnRating?.classList.remove("bg-retro-dark");
+                btnRating?.classList.add("bg-retro-brown");
+            } else {
+                btnRating?.classList.remove("bg-retro-brown");
+                btnRating?.classList.add("bg-retro-dark");
+                btnDate?.classList.remove("bg-retro-dark");
+                btnDate?.classList.add("bg-retro-brown");
+            }
+        }
+
+        btnDate?.addEventListener("click", () => sortItems("date"));
+        btnRating?.addEventListener("click", () => sortItems("rating"));
+    </script>
+</Layout>

@@ -1,0 +1,85 @@
+---
+import "../styles/global.css";
+import { ViewTransitions } from "astro:transitions";
+import ThemeToggle from "../components/ThemeToggle.astro";
+
+interface Props {
+    title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="description" content="My Retro Software Repository" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="generator" content={Astro.generator} />
+        <title>{title}</title>
+        <ViewTransitions />
+    </head>
+    <body
+        class="min-h-screen flex flex-col max-w-4xl mx-auto px-4 py-8 transition-colors duration-300"
+    >
+        <ThemeToggle />
+        <header class="mb-12 text-center">
+            <div
+                class="inline-block pixel-card bg-retro-green text-retro-beige dark:text-retro-beige mb-4 transform -rotate-1"
+            >
+                <h1
+                    class="text-4xl md:text-6xl font-bold tracking-widest uppercase"
+                >
+                    Soft.Ware
+                </h1>
+            </div>
+            <p
+                class="text-xl text-retro-dark-800 dark:text-retro-beige/80 mt-4 font-extrabold"
+            >
+                <span class="text-retro-brown-700 dark:text-retro-cream"
+                    >&gt;&gt;&gt;</span
+                > PERSONAL REPOSITORY <span
+                    class="text-retro-brown-700 dark:text-retro-cream"
+                    >&lt;&lt;&lt;</span
+                >
+            </p>
+            <nav class="mt-6 flex justify-center gap-4">
+                <a
+                    href="/"
+                    class="pixel-btn text-lg no-underline hover:scale-105 transition-transform text-retro-dark-800 dark:text-retro-beige"
+                    >HOME</a
+                >
+                <a
+                    href="/tags"
+                    class="pixel-btn text-lg no-underline bg-retro-brown text-retro-beige hover:scale-105 transition-transform"
+                    >TAGS</a
+                >
+            </nav>
+        </header>
+
+        <main class="flex-grow text-retro-dark-700 dark:text-retro-beige/90">
+            <slot />
+        </main>
+
+        <footer
+            class="mt-16 text-center text-retro-dark-600 dark:text-retro-beige/50 text-base font-bold border-t-4 border-retro-dark/40 dark:border-retro-beige/20 pt-8 transition-colors"
+        >
+            <p>
+                © {new Date().getFullYear()} Pixel Repository. Built with Astro.
+            </p>
+            <div class="mt-2">
+                <span
+                    class="inline-block w-3 h-3 bg-retro-green dark:bg-retro-cream mx-1 transition-colors"
+                ></span>
+                <span
+                    class="inline-block w-3 h-3 bg-retro-brown dark:bg-retro-green mx-1 transition-colors"
+                ></span>
+                <span
+                    class="inline-block w-3 h-3 bg-retro-dark-700 dark:bg-retro-beige mx-1 transition-colors"
+                ></span>
+            </div>
+        </footer>
+    </body>
+</html>

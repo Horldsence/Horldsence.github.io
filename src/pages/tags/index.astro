@@ -1,0 +1,170 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Card from "../../components/Card.astro";
+import { getCollection } from "astro:content";
+
+const software = await getCollection("software");
+const allTags = [
+    ...new Set(software.map((item: any) => item.data.tags).flat()),
+].sort();
+---
+
+<Layout title="Tags Filter | Software Repository">
+    <div class="mb-8">
+        <a
+            href="/"
+            class="inline-block mb-6 text-retro-dark dark:text-retro-beige hover:text-retro-green dark:hover:text-retro-cream font-bold transition-colors"
+        >
+            &lt; BACK_TO_ROOT
+        </a>
+        <h1 class="text-4xl font-bold mb-8 uppercase tracking-widest">
+            <span
+                class="bg-retro-dark text-retro-beige px-2 dark:bg-retro-beige dark:text-retro-dark transition-colors"
+                >Tag_Filter</span
+            >
+        </h1>
+
+        <div class="mb-8">
+            <p
+                class="mb-4 text-base text-retro-dark dark:text-retro-beige/70 font-extrabold"
+            >
+                SELECT_TAGS_TO_FILTER:
+            </p>
+            <div class="flex flex-wrap gap-4" id="tag-container">
+                {
+                    allTags.map((tag) => (
+                        <button
+                            data-tag={tag}
+                            class="tag-btn pixel-btn text-lg uppercase tracking-wider border-none cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
+                        >
+                            {tag}
+                        </button>
+                    ))
+                }
+            </div>
+        </div>
+
+        <div
+            class="mb-4 text-right text-base font-extrabold text-retro-dark dark:text-retro-beige/70"
+        >
+            FOUND: <span id="count-display">{software.length}</span> ITEMS
+        </div>
+
+        <div id="software-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {
+                software.map((item: any) => (
+                    <div
+                        class="software-item"
+                        data-tags={JSON.stringify(item.data.tags)}
+                    >
+                        <Card
+                            href={`/software/${item.slug}`}
+                            title={item.data.title}
+                            description={item.data.description}
+                            icon={item.data.icon}
+                            tags={item.data.tags}
+                            rating={item.data.rating}
+                        />
+                    </div>
+                ))
+            }
+        </div>
+
+        <div id="no-results" class="hidden text-center py-20 pixel-card">
+            <p class="text-2xl">NO_MATCHES_FOUND</p>
+            <p class="mt-2">Try selecting fewer tags...</p>
+        </div>
+    </div>
+
+    <script>
+        const tagBtns = document.querySelectorAll(".tag-btn");
+        const items = document.querySelectorAll(".software-item");
+        const countDisplay = document.getElementById("count-display");
+        const noResults = document.getElementById("no-results");
+
+        let selectedTags = new Set();
+
+        // Check URL params for initial tags
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialTags = urlParams.get("tags");
+        if (initialTags) {
+            initialTags.split(",").forEach((tag) => selectedTags.add(tag));
+            updateUI();
+        }
+
+        tagBtns.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const tag = btn.getAttribute("data-tag");
+                if (selectedTags.has(tag)) {
+                    selectedTags.delete(tag);
+                } else {
+                    selectedTags.add(tag);
+                }
+                updateUI();
+                updateURL();
+            });
+        });
+
+        function updateUI() {
+            // Update buttons
+            tagBtns.forEach((btn) => {
+                const tag = btn.getAttribute("data-tag");
+                if (selectedTags.has(tag)) {
+                    // Remove default classes that might conflict
+                    btn.classList.remove("opacity-60");
+                    // Add selected class
+                    btn.classList.add("tag-selected");
+                } else {
+                    // Restore default classes
+                    btn.classList.add("opacity-60");
+                    // Remove selected class
+                    btn.classList.remove("tag-selected");
+                }
+            });
+
+            // Filter items
+            let visibleCount = 0;
+            items.forEach((item) => {
+                const itemTags = JSON.parse(
+                    item.getAttribute("data-tags") || "[]",
+                );
+                // AND logic: Item must have ALL selected tags
+                const isVisible = Array.from(selectedTags).every((t) =>
+                    itemTags.includes(t),
+                );
+
+                if (isVisible) {
+                    item.classList.remove("hidden");
+                    item.classList.add("animate-fade-in");
+                    visibleCount++;
+                } else {
+                    item.classList.add("hidden");
+                    item.classList.remove("animate-fade-in");
+                }
+            });
+
+            // Update count and no results message
+            if (countDisplay) {
+                countDisplay.textContent = visibleCount.toString();
+            }
+            if (visibleCount === 0) {
+                noResults?.classList.remove("hidden");
+            } else {
+                noResults?.classList.add("hidden");
+            }
+        }
+
+        function updateURL() {
+            const url = new URL(window.location.href);
+            if (selectedTags.size > 0) {
+                url.searchParams.set(
+                    "tags",
+                    Array.from(selectedTags).join(","),
+                );
+            } else {
+                url.searchParams.delete("tags");
+            }
+            window.history.replaceState({}, "", url);
+        }
+    </script>
+</Layout>

@@ -1,0 +1,88 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import CommentSection from "../../components/CommentSection.astro";
+
+export async function getStaticPaths() {
+    const softwareEntries = await getCollection("software");
+    return softwareEntries.map((entry: any) => ({
+        params: { slug: entry.slug },
+        props: { entry },
+    }));
+}
+
+const { entry } = Astro.props as { entry: any };
+const { Content } = await entry.render();
+---
+
+<Layout title={entry.data.title}>
+    <div class="mb-8">
+        <a
+            href="/"
+            class="inline-block mb-6 text-retro-dark dark:text-retro-beige hover:text-retro-green dark:hover:text-retro-cream font-bold transition-colors"
+        >
+            &lt; BACK_TO_ROOT
+        </a>
+
+        <div class="pixel-card mb-8">
+            <div class="flex flex-col md:flex-row gap-8 items-start">
+                <div
+                    class="text-8xl bg-retro-beige dark:bg-retro-green p-4 border-4 border-retro-dark dark:border-retro-beige shadow-md transition-colors"
+                >
+                    {entry.data.icon || "💾"}
+                </div>
+
+                <div class="flex-grow">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-2">
+                        {entry.data.title}
+                    </h1>
+                    <div
+                        class="flex gap-4 text-sm mb-4 font-bold text-retro-dark/60 dark:text-retro-beige/60"
+                    >
+                        <span>VER: {entry.data.version}</span>
+                        <span
+                            >DATE: {
+                                entry.data.pubDate.toISOString().split("T")[0]
+                            }</span
+                        >
+                    </div>
+
+                    <p class="text-xl mb-6 leading-relaxed">
+                        {entry.data.description}
+                    </p>
+
+                    <div class="flex flex-wrap gap-4">
+                        {
+                            entry.data.downloadUrl && (
+                                <a
+                                    href={entry.data.downloadUrl}
+                                    class="pixel-btn text-lg"
+                                >
+                                    DOWNLOAD_NOW
+                                </a>
+                            )
+                        }
+                        {
+                            entry.data.repoUrl && (
+                                <a
+                                    href={entry.data.repoUrl}
+                                    class="px-4 py-2 border-2 border-retro-dark dark:border-retro-beige hover:bg-retro-dark dark:hover:bg-retro-beige hover:text-retro-beige dark:hover:text-retro-dark transition-colors"
+                                >
+                                    VIEW_SOURCE
+                                </a>
+                            )
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <article
+            class="prose prose-lg dark:prose-invert max-w-none prose-headings:font-pixel prose-headings:uppercase prose-p:font-sans prose-img:pixel-border prose-img:shadow-none bg-retro-beige/50 dark:bg-retro-dark/50 p-8 border-2 border-dashed border-retro-dark/20 dark:border-retro-beige/20 transition-colors"
+        >
+            <Content />
+        </article>
+
+        <CommentSection />
+    </div>
+</Layout>

@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+@font-face {
+    font-family: 'Zpix';
+    src: url('/fonts/Zpix.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --bg-base: #F8F4E9;
+    --bg-dot: #D4A373;
+    --bg-base-dark: #1E2A16;
+    --bg-dot-dark: #7C8A46;
+    --text-base: #2D2D2D;
+    --text-base-dark: #FEFAE0;
+}
+
+@layer base {
+    body {
+        @apply font-pixel antialiased;
+        background-color: var(--bg-base);
+        background-image: radial-gradient(var(--bg-dot) 1px, transparent 1px);
+        background-size: 20px 20px;
+        color: var(--text-base);
+    }
+
+    html.dark body {
+        background-color: var(--bg-base-dark);
+        background-image: radial-gradient(var(--bg-dot-dark) 1px, transparent 1px);
+        color: var(--text-base-dark);
+    }
+}
+
+@layer components {
+    .tag-selected {
+        @apply opacity-100 bg-retro-dark text-retro-beige !important;
+    }
+
+    html.dark .tag-selected {
+        @apply bg-retro-beige text-retro-dark !important;
+    }
+
+    .pixel-border {
+        box-shadow:
+            -4px 0 0 0 #283618,
+            4px 0 0 0 #283618,
+            0 -4px 0 0 #283618,
+            0 4px 0 0 #283618;
+        margin: 4px;
+    }
+
+    html.dark .pixel-border {
+        box-shadow:
+            -4px 0 0 0 #FEFAE0,
+            4px 0 0 0 #FEFAE0,
+            0 -4px 0 0 #FEFAE0,
+            0 4px 0 0 #FEFAE0;
+    }
+
+    .pixel-btn {
+        @apply px-4 py-2 bg-retro-green text-retro-beige transition-transform active:scale-95;
+        box-shadow:
+            inset -4px -4px 0px 0px rgba(0, 0, 0, 0.2),
+            -2px 0 0 0 #283618,
+            2px 0 0 0 #283618,
+            0 -2px 0 0 #283618,
+            0 2px 0 0 #283618;
+    }
+
+    html.dark .pixel-btn {
+        box-shadow:
+            inset -4px -4px 0px 0px rgba(0, 0, 0, 0.2),
+            -2px 0 0 0 #FEFAE0,
+            2px 0 0 0 #FEFAE0,
+            0 -2px 0 0 #FEFAE0,
+            0 2px 0 0 #FEFAE0;
+    }
+
+    .pixel-card {
+        @apply bg-retro-cream p-6 relative dark:bg-[#3A4A25] dark:text-retro-beige transition-colors duration-300;
+        box-shadow:
+            -4px 0 0 0 #283618,
+            4px 0 0 0 #283618,
+            0 -4px 0 0 #283618,
+            0 4px 0 0 #283618,
+            8px 8px 0 0 rgba(40, 54, 24, 0.2);
+    }
+
+    html.dark .pixel-card {
+        box-shadow:
+            -4px 0 0 0 #FEFAE0,
+            4px 0 0 0 #FEFAE0,
+            0 -4px 0 0 #FEFAE0,
+            0 4px 0 0 #FEFAE0,
+            8px 8px 0 0 rgba(254, 250, 224, 0.1);
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-out forwards;
+    }
+
+    .animate-pop-in {
+        animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

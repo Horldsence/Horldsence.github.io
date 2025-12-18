@@ -1,0 +1,55 @@
+---
+import Rating from "./Rating.astro";
+
+interface Props {
+    title: string;
+    description: string;
+    href: string;
+    icon?: string;
+    tags: string[];
+    rating?: number;
+}
+
+const { href, title, description, icon = "💾", tags, rating = 0 } = Astro.props;
+---
+
+<a href={href} class="block group">
+    <div
+        class="pixel-card h-full transition-transform group-hover:-translate-y-1 group-hover:translate-x-1"
+    >
+        <div class="flex items-start justify-between mb-4">
+            <div
+                class="text-4xl bg-retro-beige dark:bg-retro-green p-2 border-2 border-retro-dark dark:border-retro-beige shadow-sm transition-colors"
+            >
+                {icon}
+            </div>
+            <div class="flex gap-2 flex-wrap justify-end">
+                {
+                    tags
+                        .slice(0, 3)
+                        .map((tag) => (
+                            <span class="text-xs bg-retro-brown text-retro-beige px-2 py-1 uppercase tracking-wider">
+                                {tag}
+                            </span>
+                        ))
+                }
+            </div>
+        </div>
+        <h2
+            class="text-2xl font-bold mb-2 group-hover:text-retro-green dark:group-hover:text-retro-cream transition-colors"
+        >
+            {title}
+        </h2>
+        <div class="mb-3">
+            <Rating rating={rating} />
+        </div>
+        <p class="text-retro-dark/80 dark:text-retro-beige/80 leading-relaxed">
+            {description}
+        </p>
+        <div
+            class="mt-4 text-right text-retro-green dark:text-retro-cream font-bold opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+            OPEN_FILE >
+        </div>
+    </div>
+</a>

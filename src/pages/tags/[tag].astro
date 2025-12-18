@@ -1,0 +1,57 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Card from "../../components/Card.astro";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+    const software = await getCollection("software");
+    const uniqueTags = [
+        ...new Set(software.map((item: any) => item.data.tags).flat()),
+    ];
+
+    return uniqueTags.map((tag) => {
+        const filteredSoftware = software.filter((item: any) =>
+            item.data.tags.includes(tag),
+        );
+        return {
+            params: { tag },
+            props: { software: filteredSoftware },
+        };
+    });
+}
+
+const { tag } = Astro.params;
+const { software } = Astro.props;
+---
+
+<Layout title={`Tag: ${tag} | Software Repository`}>
+    <div class="mb-8">
+        <a
+            href="/tags"
+            class="inline-block mb-6 text-retro-dark dark:text-retro-beige hover:text-retro-green dark:hover:text-retro-cream font-bold transition-colors"
+        >
+            &lt; BACK_TO_TAGS
+        </a>
+        <h1 class="text-4xl font-bold mb-8 uppercase tracking-widest">
+            TAG: <span
+                class="bg-retro-dark text-retro-beige px-2 dark:bg-retro-beige dark:text-retro-dark transition-colors"
+                >{tag}</span
+            >
+        </h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {
+                software.map((item: any) => (
+                    <Card
+                        href={`/software/${item.slug}`}
+                        title={item.data.title}
+                        description={item.data.description}
+                        icon={item.data.icon}
+                        tags={item.data.tags}
+                        rating={item.data.rating}
+                    />
+                ))
+            }
+        </div>
+    </div>
+</Layout>
