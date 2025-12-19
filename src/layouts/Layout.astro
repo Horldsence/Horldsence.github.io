@@ -85,20 +85,23 @@ const { title } = Astro.props;
 
         <script>
             class PhysicsSystem {
-                items: Set<PhysicsItem>;
+                items: Set<any>;
                 mouseX: number;
                 mouseY: number;
+
+                animationFrameId: number;
+                boundMouseMove: (e: MouseEvent) => void;
+                boundTouchMove: (e: TouchEvent) => void;
+                boundMouseUp: () => void;
+                boundTouchEnd: () => void;
 
                 constructor() {
                     this.items = new Set();
                     this.mouseX = 0;
                     this.mouseY = 0;
-                    this.initGlobalEvents();
-                    this.loop();
-                }
+                    this.animationFrameId = 0;
 
-                initGlobalEvents() {
-                    window.addEventListener("mousemove", (e) => {
+                    this.boundMouseMove = (e) => {
                         this.mouseX = e.clientX;
                         this.mouseY = e.clientY;
                         this.items.forEach((item) => {
@@ -106,34 +109,56 @@ const { title } = Astro.props;
                                 item.onMove(e.clientX, e.clientY);
                         });
                         this.updateShadows();
-                    });
+                    };
 
-                    window.addEventListener(
-                        "touchmove",
-                        (e) => {
-                            const t = e.touches[0];
-                            this.mouseX = t.clientX;
-                            this.mouseY = t.clientY;
-                            this.items.forEach((item) => {
-                                if (item.state.isDragging)
-                                    item.onMove(t.clientX, t.clientY);
-                            });
-                            this.updateShadows();
-                        },
-                        { passive: false },
+                    this.boundTouchMove = (e) => {
+                        const t = e.touches[0];
+                        this.mouseX = t.clientX;
+                        this.mouseY = t.clientY;
+                        this.items.forEach((item) => {
+                            if (item.state.isDragging)
+                                item.onMove(t.clientX, t.clientY);
+                        });
+                        this.updateShadows();
+                    };
+
+                    this.boundMouseUp = () => {
+                        this.items.forEach((item) => {
+                            if (item.state.isDragging) item.onUp();
+                        });
+                    };
+
+                    this.boundTouchEnd = () => {
+                        this.items.forEach((item) => {
+                            if (item.state.isDragging) item.onUp();
+                        });
+                    };
+
+                    this.initGlobalEvents();
+                    this.loop();
+                }
+
+                initGlobalEvents() {
+                    window.addEventListener("mousemove", this.boundMouseMove);
+                    window.addEventListener("touchmove", this.boundTouchMove, {
+                        passive: false,
+                    });
+                    window.addEventListener("mouseup", this.boundMouseUp);
+                    window.addEventListener("touchend", this.boundTouchEnd);
+                }
+
+                destroy() {
+                    window.removeEventListener(
+                        "mousemove",
+                        this.boundMouseMove,
                     );
-
-                    window.addEventListener("mouseup", () => {
-                        this.items.forEach((item) => {
-                            if (item.state.isDragging) item.onUp();
-                        });
-                    });
-
-                    window.addEventListener("touchend", () => {
-                        this.items.forEach((item) => {
-                            if (item.state.isDragging) item.onUp();
-                        });
-                    });
+                    window.removeEventListener(
+                        "touchmove",
+                        this.boundTouchMove,
+                    );
+                    window.removeEventListener("mouseup", this.boundMouseUp);
+                    window.removeEventListener("touchend", this.boundTouchEnd);
+                    cancelAnimationFrame(this.animationFrameId);
                 }
 
                 register(el: HTMLElement, options: any) {
@@ -181,7 +206,9 @@ const { title } = Astro.props;
 
                 loop() {
                     this.items.forEach((item) => item.update());
-                    requestAnimationFrame(() => this.loop());
+                    this.animationFrameId = requestAnimationFrame(() =>
+                        this.loop(),
+                    );
                 }
             }
 
@@ -407,8 +434,14 @@ const { title } = Astro.props;
                 }
             }
 
+            let globalPhysicsSystem: PhysicsSystem | null = null;
+
             document.addEventListener("astro:page-load", () => {
+                if (globalPhysicsSystem) {
+                    globalPhysicsSystem.destroy();
+                }
                 const system = new PhysicsSystem();
+                globalPhysicsSystem = system;
 
                 // Register Sign
                 const sign = document.getElementById("sign-board");
