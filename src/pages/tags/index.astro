@@ -120,38 +120,135 @@ const allTags = [
                 btn.classList.toggle("opacity-60", !isSelected);
             });
 
-            // Filter items
+            const grid = document.getElementById("software-grid");
+            if (!grid) return;
+
+            // Ensure grid is relative for absolute positioning of exiting items
+            grid.style.position = "relative";
+
+            // 1. Capture positions of items that will remain visible (FLIP - First)
+            const visibleItemsBefore = new Map();
+            items.forEach((item) => {
+                // We only care about items that are currently part of the layout flow
+                if (
+                    !item.classList.contains("hidden") &&
+                    !item.classList.contains("exiting")
+                ) {
+                    const rect = item.getBoundingClientRect();
+                    visibleItemsBefore.set(item, rect);
+                }
+            });
+
+            // 2. Apply visibility changes
             let visibleCount = 0;
+
             items.forEach((item) => {
                 const itemTags = JSON.parse(
                     item.getAttribute("data-tags") || "[]",
                 );
                 // AND logic: Item must have ALL selected tags
-                const isVisible = Array.from(selectedTags).every((t) =>
+                const shouldBeVisible = Array.from(selectedTags).every((t) =>
                     itemTags.includes(t),
                 );
 
-                if (isVisible) {
-                    item.classList.remove("hidden");
-                    item.classList.remove("animate-scale-out");
-                    item.classList.add("animate-pop-in");
+                if (shouldBeVisible) {
                     visibleCount++;
-                } else {
-                    // Only animate out if it's not already hidden
-                    if (!item.classList.contains("hidden")) {
-                        item.classList.remove("animate-pop-in");
-                        item.classList.add("animate-scale-out");
 
-                        // Wait for animation to finish before hiding
+                    // If it was hidden or exiting, show it
+                    if (
+                        item.classList.contains("hidden") ||
+                        item.classList.contains("exiting")
+                    ) {
+                        item.classList.remove("hidden");
+                        item.classList.remove("exiting");
+
+                        // Reset styles from absolute positioning if it was exiting
+                        item.style.position = "";
+                        item.style.left = "";
+                        item.style.top = "";
+                        item.style.width = "";
+                        item.style.height = "";
+                        item.style.zIndex = "";
+
+                        item.classList.remove("animate-scale-out");
+                        item.classList.add("animate-pop-in");
+                    }
+                } else {
+                    // Should be hidden
+                    // Only animate out if it's not already hidden or exiting
+                    if (
+                        !item.classList.contains("hidden") &&
+                        !item.classList.contains("exiting")
+                    ) {
+                        // Start exit animation
+                        const rect = item.getBoundingClientRect();
+                        const gridRect = grid.getBoundingClientRect();
+
+                        // Lock position to take it out of flow immediately
+                        item.style.width = `${rect.width}px`;
+                        item.style.height = `${rect.height}px`;
+                        item.style.left = `${rect.left - gridRect.left}px`;
+                        item.style.top = `${rect.top - gridRect.top}px`;
+                        item.style.position = "absolute";
+                        item.style.zIndex = "0";
+
+                        item.classList.add("exiting");
+                        item.classList.add("animate-scale-out");
+                        item.classList.remove("animate-pop-in");
+
                         item.addEventListener(
                             "animationend",
                             () => {
-                                if (
-                                    item.classList.contains("animate-scale-out")
-                                ) {
+                                if (item.classList.contains("exiting")) {
                                     item.classList.add("hidden");
+                                    item.classList.remove("exiting");
                                     item.classList.remove("animate-scale-out");
+                                    // Clean up inline styles
+                                    item.style.position = "";
+                                    item.style.left = "";
+                                    item.style.top = "";
+                                    item.style.width = "";
+                                    item.style.height = "";
+                                    item.style.zIndex = "";
                                 }
+                            },
+                            { once: true },
+                        );
+                    }
+                }
+            });
+
+            // 3. FLIP Animation for remaining items (Last, Invert, Play)
+            items.forEach((item) => {
+                if (
+                    visibleItemsBefore.has(item) &&
+                    !item.classList.contains("hidden") &&
+                    !item.classList.contains("exiting")
+                ) {
+                    const oldRect = visibleItemsBefore.get(item);
+                    const newRect = item.getBoundingClientRect();
+
+                    const deltaX = oldRect.left - newRect.left;
+                    const deltaY = oldRect.top - newRect.top;
+
+                    if (deltaX !== 0 || deltaY !== 0) {
+                        // Invert
+                        item.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                        item.style.transition = "none";
+
+                        // Force reflow
+                        void item.offsetHeight;
+
+                        // Play
+                        item.style.transition =
+                            "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)";
+                        item.style.transform = "";
+
+                        // Clean up transition after it's done
+                        item.addEventListener(
+                            "transitionend",
+                            () => {
+                                item.style.transition = "";
                             },
                             { once: true },
                         );
@@ -164,9 +261,13 @@ const allTags = [
                 countDisplay.textContent = visibleCount.toString();
             }
             if (visibleCount === 0) {
-                noResults?.classList.remove("hidden");
+                if (noResults?.classList.contains("hidden")) {
+                    noResults.classList.remove("hidden");
+                    noResults.classList.add("animate-pop-in");
+                }
             } else {
                 noResults?.classList.add("hidden");
+                noResults?.classList.remove("animate-pop-in");
             }
         }
 
