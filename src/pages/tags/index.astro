@@ -77,8 +77,12 @@ const allTags = [
     </div>
 
     <script>
-        const tagBtns = document.querySelectorAll(".tag-btn");
-        const items = document.querySelectorAll(".software-item");
+        const tagBtns = Array.from(
+            document.querySelectorAll<HTMLButtonElement>(".tag-btn"),
+        );
+        const items = Array.from(
+            document.querySelectorAll<HTMLElement>(".software-item"),
+        );
         const countDisplay = document.getElementById("count-display");
         const noResults = document.getElementById("no-results");
 
@@ -89,7 +93,6 @@ const allTags = [
         const initialTags = urlParams.get("tags");
         if (initialTags) {
             initialTags.split(",").forEach((tag) => selectedTags.add(tag));
-            updateUI();
         }
 
         tagBtns.forEach((btn) => {
@@ -109,17 +112,11 @@ const allTags = [
             // Update buttons
             tagBtns.forEach((btn) => {
                 const tag = btn.getAttribute("data-tag");
-                if (selectedTags.has(tag)) {
-                    // Remove default classes that might conflict
-                    btn.classList.remove("opacity-60");
-                    // Add selected class
-                    btn.classList.add("tag-selected");
-                } else {
-                    // Restore default classes
-                    btn.classList.add("opacity-60");
-                    // Remove selected class
-                    btn.classList.remove("tag-selected");
-                }
+                const isSelected = selectedTags.has(tag);
+                btn.setAttribute("aria-pressed", isSelected ? "true" : "false");
+                btn.dataset.active = isSelected ? "true" : "false";
+                btn.classList.toggle("tag-selected", isSelected);
+                btn.classList.toggle("opacity-60", !isSelected);
             });
 
             // Filter items
@@ -166,5 +163,29 @@ const allTags = [
             }
             window.history.replaceState({}, "", url);
         }
+
+        // Initialize UI state on first load
+        updateUI();
     </script>
+
+    <style>
+        :global(.tag-btn[data-active="true"]) {
+            outline: 2px solid #283618;
+            box-shadow:
+                -3px 0 0 0 #283618,
+                3px 0 0 0 #283618,
+                0 -3px 0 0 #283618,
+                0 3px 0 0 #283618;
+            transform: translate(-1px, -1px);
+        }
+
+        :global(html.dark .tag-btn[data-active="true"]) {
+            outline-color: #fefae0;
+            box-shadow:
+                -3px 0 0 0 #fefae0,
+                3px 0 0 0 #fefae0,
+                0 -3px 0 0 #fefae0,
+                0 3px 0 0 #fefae0;
+        }
+    </style>
 </Layout>

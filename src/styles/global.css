@@ -8,9 +8,9 @@
     font-display: swap;
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 :root {
     --bg-base: #F8F4E9;
@@ -21,93 +21,110 @@
     --text-base-dark: #FEFAE0;
 }
 
-@layer base {
-    body {
-        @apply font-pixel antialiased;
-        background-color: var(--bg-base);
-        background-image: radial-gradient(var(--bg-dot) 1px, transparent 1px);
-        background-size: 20px 20px;
-        color: var(--text-base);
-    }
-
-    html.dark body {
-        background-color: var(--bg-base-dark);
-        background-image: radial-gradient(var(--bg-dot-dark) 1px, transparent 1px);
-        color: var(--text-base-dark);
-    }
+body {
+    font-family: "Zpix", "VT323", monospace;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--bg-base);
+    background-image: radial-gradient(var(--bg-dot) 1px, transparent 1px);
+    background-size: 20px 20px;
+    color: var(--text-base);
 }
 
-@layer components {
-    .tag-selected {
-        @apply opacity-100 bg-retro-dark text-retro-beige !important;
-    }
+html.dark body {
+    background-color: var(--bg-base-dark);
+    background-image: radial-gradient(var(--bg-dot-dark) 1px, transparent 1px);
+    color: var(--text-base-dark);
+}
 
-    html.dark .tag-selected {
-        @apply bg-retro-beige text-retro-dark !important;
-    }
+.tag-selected {
+    opacity: 1 !important;
+    background-color: #283618 !important;
+    color: #FEFAE0 !important;
+}
 
-    .pixel-border {
-        box-shadow:
-            -4px 0 0 0 #283618,
-            4px 0 0 0 #283618,
-            0 -4px 0 0 #283618,
-            0 4px 0 0 #283618;
-        margin: 4px;
-    }
+html.dark .tag-selected {
+    background-color: #FEFAE0 !important;
+    color: #283618 !important;
+}
 
-    html.dark .pixel-border {
-        box-shadow:
-            -4px 0 0 0 #FEFAE0,
-            4px 0 0 0 #FEFAE0,
-            0 -4px 0 0 #FEFAE0,
-            0 4px 0 0 #FEFAE0;
-    }
+.pixel-border {
+    box-shadow:
+        -4px 0 0 0 #283618,
+        4px 0 0 0 #283618,
+        0 -4px 0 0 #283618,
+        0 4px 0 0 #283618;
+    margin: 4px;
+}
 
-    .pixel-btn {
-        @apply px-4 py-2 bg-retro-green text-retro-beige transition-transform active:scale-95;
-        box-shadow:
-            inset -4px -4px 0px 0px rgba(0, 0, 0, 0.2),
-            -2px 0 0 0 #283618,
-            2px 0 0 0 #283618,
-            0 -2px 0 0 #283618,
-            0 2px 0 0 #283618;
-    }
+html.dark .pixel-border {
+    box-shadow:
+        -4px 0 0 0 #FEFAE0,
+        4px 0 0 0 #FEFAE0,
+        0 -4px 0 0 #FEFAE0,
+        0 4px 0 0 #FEFAE0;
+}
 
-    html.dark .pixel-btn {
-        box-shadow:
-            inset -4px -4px 0px 0px rgba(0, 0, 0, 0.2),
-            -2px 0 0 0 #FEFAE0,
-            2px 0 0 0 #FEFAE0,
-            0 -2px 0 0 #FEFAE0,
-            0 2px 0 0 #FEFAE0;
-    }
+.pixel-btn {
+    padding: 0.5rem 1rem;
+    background-color: #606C38;
+    color: #FEFAE0;
+    transition-property: transform;
+    transition-duration: 150ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow:
+        inset -4px -4px 0px 0px rgba(0, 0, 0, 0.2),
+        -2px 0 0 0 #283618,
+        2px 0 0 0 #283618,
+        0 -2px 0 0 #283618,
+        0 2px 0 0 #283618;
+}
 
-    .pixel-card {
-        @apply bg-retro-cream p-6 relative dark:bg-[#3A4A25] dark:text-retro-beige transition-colors duration-300;
-        box-shadow:
-            -4px 0 0 0 #283618,
-            4px 0 0 0 #283618,
-            0 -4px 0 0 #283618,
-            0 4px 0 0 #283618,
-            8px 8px 0 0 rgba(40, 54, 24, 0.2);
-    }
+.pixel-btn:active {
+    transform: scale(0.95);
+}
 
-    html.dark .pixel-card {
-        box-shadow:
-            -4px 0 0 0 #FEFAE0,
-            4px 0 0 0 #FEFAE0,
-            0 -4px 0 0 #FEFAE0,
-            0 4px 0 0 #FEFAE0,
-            8px 8px 0 0 rgba(254, 250, 224, 0.1);
-    }
+html.dark .pixel-btn {
+    box-shadow:
+        inset -4px -4px 0px 0px rgba(0, 0, 0, 0.2),
+        -2px 0 0 0 #FEFAE0,
+        2px 0 0 0 #FEFAE0,
+        0 -2px 0 0 #FEFAE0,
+        0 2px 0 0 #FEFAE0;
+}
 
-    .animate-fade-in {
-        animation: fadeIn 0.3s ease-out forwards;
-    }
+.pixel-card {
+    background-color: #FAEDCD;
+    padding: 1.5rem;
+    position: relative;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-duration: 300ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow:
+        -4px 0 0 0 #283618,
+        4px 0 0 0 #283618,
+        0 -4px 0 0 #283618,
+        0 4px 0 0 #283618,
+        8px 8px 0 0 rgba(40, 54, 24, 0.2);
+}
 
-    .animate-pop-in {
-        animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    }
+html.dark .pixel-card {
+    background-color: #3A4A25;
+    color: #FEFAE0;
+    box-shadow:
+        -4px 0 0 0 #FEFAE0,
+        4px 0 0 0 #FEFAE0,
+        0 -4px 0 0 #FEFAE0,
+        0 4px 0 0 #FEFAE0,
+        8px 8px 0 0 rgba(254, 250, 224, 0.1);
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-pop-in {
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 @keyframes fadeIn {

@@ -7,8 +7,43 @@
     class="pixel-btn fixed top-4 right-4 z-50 text-xl p-2"
     title="Toggle Theme"
 >
-    <span class="sun hidden">☀️</span>
-    <span class="moon hidden">🌙</span>
+    <svg
+        class="pixel-icon sun hidden"
+        viewBox="0 0 16 16"
+        role="presentation"
+        aria-hidden="true"
+    >
+        <rect x="7" y="1" width="2" height="2"></rect>
+        <rect x="7" y="13" width="2" height="2"></rect>
+        <rect x="1" y="7" width="2" height="2"></rect>
+        <rect x="13" y="7" width="2" height="2"></rect>
+        <rect x="5" y="5" width="6" height="6"></rect>
+        <rect x="5" y="2" width="2" height="2"></rect>
+        <rect x="9" y="2" width="2" height="2"></rect>
+        <rect x="5" y="12" width="2" height="2"></rect>
+        <rect x="9" y="12" width="2" height="2"></rect>
+        <rect x="2" y="5" width="2" height="2"></rect>
+        <rect x="12" y="5" width="2" height="2"></rect>
+        <rect x="2" y="9" width="2" height="2"></rect>
+        <rect x="12" y="9" width="2" height="2"></rect>
+    </svg>
+    <svg
+        class="pixel-icon moon hidden"
+        viewBox="0 0 16 16"
+        role="presentation"
+        aria-hidden="true"
+    >
+        <rect x="5" y="2" width="6" height="2"></rect>
+        <rect x="4" y="4" width="8" height="2"></rect>
+        <rect x="3" y="6" width="9" height="2"></rect>
+        <rect x="3" y="8" width="9" height="2"></rect>
+        <rect x="4" y="10" width="8" height="2"></rect>
+        <rect x="5" y="12" width="6" height="2"></rect>
+        <rect x="7" y="4" width="4" height="2" fill="#2d2d2d"></rect>
+        <rect x="6" y="6" width="5" height="2" fill="#2d2d2d"></rect>
+        <rect x="6" y="8" width="5" height="2" fill="#2d2d2d"></rect>
+        <rect x="7" y="10" width="4" height="2" fill="#2d2d2d"></rect>
+    </svg>
 </button>
 
 <script>
@@ -67,3 +102,25 @@
     // Run on view transitions navigation
     document.addEventListener("astro:after-swap", initTheme);
 </script>
+
+<style>
+    .pixel-icon {
+        width: 26px;
+        height: 26px;
+        image-rendering: pixelated;
+        shape-rendering: crispEdges;
+        fill: #facc15;
+    }
+
+    .pixel-icon.moon {
+        fill: #e5e7eb;
+    }
+
+    html.dark .pixel-icon.sun {
+        opacity: 0.85;
+    }
+
+    html.dark .pixel-icon.moon {
+        fill: #f9fafb;
+    }
+</style>
