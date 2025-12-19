@@ -183,48 +183,20 @@ const { title } = Astro.props;
                     const bgY = (this.smoothMouseY - cy) * 0.02;
 
                     document.body.style.backgroundPosition = `${50 + bgX * 0.1}% ${50 + bgY * 0.1}%`;
-
-                    const elements = document.querySelectorAll(
-                        ".pixel-card, .pixel-shadow, .prose pre, .pixel-btn",
-                    );
-
-                    elements.forEach((el) => {
-                        const rect = el.getBoundingClientRect();
-                        const centerX = rect.left + rect.width / 2;
-                        const centerY = rect.top + rect.height / 2;
-
-                        const dx = centerX - this.smoothMouseX;
-                        const dy = centerY - this.smoothMouseY;
-
-                        // Enhanced shadow calculation
-                        const maxShadow = 12;
-                        const sensitivity = 15;
-
-                        let sx = dx / sensitivity;
-                        let sy = dy / sensitivity;
-
-                        const len = Math.sqrt(sx * sx + sy * sy);
-                        if (len > maxShadow) {
-                            sx = (sx / len) * maxShadow;
-                            sy = (sy / len) * maxShadow;
-                        }
-
-                        (el as HTMLElement).style.setProperty(
-                            "--sx",
-                            `${sx}px`,
-                        );
-                        (el as HTMLElement).style.setProperty(
-                            "--sy",
-                            `${sy}px`,
-                        );
-                    });
                 }
 
                 loop() {
                     this.updateGlobalEffects();
-                    this.items.forEach((item) =>
-                        item.update(this.smoothMouseX, this.smoothMouseY),
-                    );
+
+                    this.items.forEach((item) => {
+                        if (!item.state.isDragging) {
+                            const baseScale = item.state.isHovering ? 1.02 : 1;
+                            item.state.targetScale = baseScale;
+                        }
+
+                        item.update(this.smoothMouseX, this.smoothMouseY);
+                    });
+
                     this.animationFrameId = requestAnimationFrame(() =>
                         this.loop(),
                     );
@@ -260,6 +232,7 @@ const { title } = Astro.props;
                         vAngle: 0,
                         isDragging: false,
                         isHanging: true,
+                        isHovering: false,
                         dragOffsetX: 0,
                         dragOffsetY: 0,
                         hasDragged: false,
@@ -318,16 +291,11 @@ const { title } = Astro.props;
 
                     // Hover disturbance
                     this.el.addEventListener("mouseenter", () => {
-                        if (this.state.isHanging && !this.state.isDragging) {
-                            // Very subtle lift
-                            this.state.targetScale = 1.01;
-                        }
+                        this.state.isHovering = true;
                     });
 
                     this.el.addEventListener("mouseleave", () => {
-                        if (!this.state.isDragging) {
-                            this.state.targetScale = 1;
-                        }
+                        this.state.isHovering = false;
                     });
                 }
 
