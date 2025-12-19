@@ -25,12 +25,13 @@ const { title } = Astro.props;
         class="min-h-screen flex flex-col max-w-4xl mx-auto px-4 py-8 transition-colors duration-300"
     >
         <ThemeToggle />
-        <header class="mb-12 text-center">
+        <header class="mb-12 text-center relative z-10">
             <div
-                class="inline-block pixel-card bg-retro-green mb-4 transform -rotate-1"
+                id="sign-board"
+                class="inline-block pixel-card bg-retro-green mb-4 transform -rotate-1 cursor-grab active:cursor-grabbing select-none touch-none"
             >
                 <h1
-                    class="text-4xl md:text-6xl font-bold tracking-widest uppercase text-retro-dark dark:text-retro-beige"
+                    class="text-4xl md:text-6xl font-bold tracking-widest uppercase text-retro-dark dark:text-retro-beige pointer-events-none"
                 >
                     Soft.Ware
                 </h1>
@@ -81,5 +82,360 @@ const { title } = Astro.props;
                 ></span>
             </div>
         </footer>
+
+        <script>
+            class PhysicsSystem {
+                items: Set<PhysicsItem>;
+                mouseX: number;
+                mouseY: number;
+
+                constructor() {
+                    this.items = new Set();
+                    this.mouseX = 0;
+                    this.mouseY = 0;
+                    this.initGlobalEvents();
+                    this.loop();
+                }
+
+                initGlobalEvents() {
+                    window.addEventListener("mousemove", (e) => {
+                        this.mouseX = e.clientX;
+                        this.mouseY = e.clientY;
+                        this.items.forEach((item) => {
+                            if (item.state.isDragging)
+                                item.onMove(e.clientX, e.clientY);
+                        });
+                        this.updateShadows();
+                    });
+
+                    window.addEventListener(
+                        "touchmove",
+                        (e) => {
+                            const t = e.touches[0];
+                            this.mouseX = t.clientX;
+                            this.mouseY = t.clientY;
+                            this.items.forEach((item) => {
+                                if (item.state.isDragging)
+                                    item.onMove(t.clientX, t.clientY);
+                            });
+                            this.updateShadows();
+                        },
+                        { passive: false },
+                    );
+
+                    window.addEventListener("mouseup", () => {
+                        this.items.forEach((item) => {
+                            if (item.state.isDragging) item.onUp();
+                        });
+                    });
+
+                    window.addEventListener("touchend", () => {
+                        this.items.forEach((item) => {
+                            if (item.state.isDragging) item.onUp();
+                        });
+                    });
+                }
+
+                register(el: HTMLElement, options: any) {
+                    const item = new PhysicsItem(el, options);
+                    this.items.add(item);
+                    return item;
+                }
+
+                updateShadows() {
+                    const elements = document.querySelectorAll(
+                        ".pixel-card, .pixel-shadow, .prose pre, .pixel-btn",
+                    );
+
+                    elements.forEach((el) => {
+                        const rect = el.getBoundingClientRect();
+                        const centerX = rect.left + rect.width / 2;
+                        const centerY = rect.top + rect.height / 2;
+
+                        const dx = centerX - this.mouseX;
+                        const dy = centerY - this.mouseY;
+
+                        // Enhanced shadow calculation
+                        const maxShadow = 15; // Modified to 15
+                        const sensitivity = 10; // Lower is more sensitive
+
+                        let sx = dx / sensitivity;
+                        let sy = dy / sensitivity;
+
+                        const len = Math.sqrt(sx * sx + sy * sy);
+                        if (len > maxShadow) {
+                            sx = (sx / len) * maxShadow;
+                            sy = (sy / len) * maxShadow;
+                        }
+
+                        (el as HTMLElement).style.setProperty(
+                            "--sx",
+                            `${sx}px`,
+                        );
+                        (el as HTMLElement).style.setProperty(
+                            "--sy",
+                            `${sy}px`,
+                        );
+                    });
+                }
+
+                loop() {
+                    this.items.forEach((item) => item.update());
+                    requestAnimationFrame(() => this.loop());
+                }
+            }
+
+            class PhysicsItem {
+                el: HTMLElement;
+                options: any;
+                state: any;
+
+                constructor(el: HTMLElement, options: any) {
+                    this.el = el;
+                    this.options = Object.assign(
+                        {
+                            canDetach: false,
+                            snapDistance: 100,
+                            gravity: 0.8,
+                            friction: 0.92,
+                            spring: 0.1,
+                            damping: 0.8,
+                            baseAngle: 0,
+                        },
+                        options,
+                    );
+
+                    this.state = {
+                        x: 0,
+                        y: 0,
+                        angle: this.options.baseAngle,
+                        vx: 0,
+                        vy: 0,
+                        vAngle: 0,
+                        isDragging: false,
+                        isHanging: true,
+                        dragOffsetX: 0,
+                        dragOffsetY: 0,
+                        hasDragged: false,
+                    };
+
+                    // Initialize styles
+                    this.el.style.transformOrigin = "50% 10%";
+                    this.el.style.cursor = "grab";
+                    this.el.style.userSelect = "none";
+                    this.el.style.touchAction = "none";
+
+                    this.initEvents();
+                }
+
+                initEvents() {
+                    const startDrag = (clientX: number, clientY: number) => {
+                        this.state.isDragging = true;
+                        this.state.isHanging = false;
+                        this.state.hasDragged = false;
+                        this.state.dragOffsetX = clientX - this.state.x;
+                        this.state.dragOffsetY = clientY - this.state.y;
+                        this.el.style.cursor = "grabbing";
+                        this.el.style.zIndex = "50"; // Bring to front
+                    };
+
+                    this.el.addEventListener("mousedown", (e) =>
+                        startDrag(e.clientX, e.clientY),
+                    );
+                    this.el.addEventListener(
+                        "touchstart",
+                        (e) =>
+                            startDrag(
+                                e.touches[0].clientX,
+                                e.touches[0].clientY,
+                            ),
+                        { passive: false },
+                    );
+
+                    // Prevent click if dragged
+                    this.el.addEventListener(
+                        "click",
+                        (e) => {
+                            if (this.state.hasDragged) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }
+                        },
+                        { capture: true },
+                    );
+
+                    // Hover disturbance
+                    this.el.addEventListener("mouseenter", () => {
+                        if (this.state.isHanging && !this.state.isDragging) {
+                            this.state.vAngle += (Math.random() - 0.5) * 15;
+                            this.state.vx += (Math.random() - 0.5) * 5;
+                        }
+                    });
+                }
+
+                onMove(clientX: number, clientY: number) {
+                    const dx = clientX - this.state.dragOffsetX - this.state.x;
+                    const dy = clientY - this.state.dragOffsetY - this.state.y;
+
+                    // Threshold for "dragged" state to prevent blocking simple clicks
+                    if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+                        this.state.hasDragged = true;
+                    }
+
+                    this.state.x = clientX - this.state.dragOffsetX;
+                    this.state.y = clientY - this.state.dragOffsetY;
+
+                    // Calculate velocity for throw
+                    // Simple smoothing
+                    // this.state.vx = ... (handled in update for simplicity or here)
+                }
+
+                onUp() {
+                    this.state.isDragging = false;
+                    this.el.style.cursor = "grab";
+                    this.el.style.zIndex = "";
+
+                    const dist = Math.sqrt(
+                        this.state.x * this.state.x +
+                            this.state.y * this.state.y,
+                    );
+
+                    if (
+                        !this.options.canDetach ||
+                        dist < this.options.snapDistance
+                    ) {
+                        this.state.isHanging = true;
+                    } else {
+                        // Throw
+                        this.state.vAngle = this.state.vx * 0.5;
+                    }
+                }
+
+                update() {
+                    if (this.state.isDragging) {
+                        // Track velocity while dragging
+                        // We need 'lastX' logic or just infer from movement
+                        // For simplicity, let's just let it be 0 or calculate simple delta
+                        // But to throw, we need history.
+                        // Let's just use a simple decay if we don't track history,
+                        // OR, better:
+                        // We can't easily calculate velocity inside 'update' if 'onMove' isn't called every frame.
+                        // Let's just add a 'targetX' in onMove and lerp to it?
+                        // No, let's just use the previous position in update.
+
+                        // Actually, let's just set velocity to 0 while dragging for stability,
+                        // and calculate "throw velocity" based on recent movement if we wanted.
+                        // For now, let's just give it a little spin on release based on position change?
+                        // Or just let it drop.
+
+                        // To make it feel good, we need velocity.
+                        // Let's store last pos.
+                        if (this.state.lastX !== undefined) {
+                            this.state.vx = this.state.x - this.state.lastX;
+                            this.state.vy = this.state.y - this.state.lastY;
+                        }
+                        this.state.lastX = this.state.x;
+                        this.state.lastY = this.state.y;
+
+                        // Tilt while dragging
+                        const targetAngle = this.state.vx * 1.5;
+                        this.state.angle +=
+                            (targetAngle - this.state.angle) * 0.2;
+                    } else {
+                        this.state.lastX = this.state.x;
+                        this.state.lastY = this.state.y;
+
+                        if (this.state.isHanging) {
+                            // Spring to 0,0
+                            const ax = (0 - this.state.x) * this.options.spring;
+                            const ay = (0 - this.state.y) * this.options.spring;
+
+                            this.state.vx += ax;
+                            this.state.vy += ay;
+                            this.state.vx *= this.options.damping;
+                            this.state.vy *= this.options.damping;
+
+                            this.state.x += this.state.vx;
+                            this.state.y += this.state.vy;
+
+                            // Angular spring to baseAngle
+                            this.state.vAngle +=
+                                (this.options.baseAngle - this.state.angle) *
+                                0.1;
+                            this.state.vAngle *= 0.9;
+                            this.state.angle += this.state.vAngle;
+                        } else {
+                            // Free fall
+                            this.state.vy += this.options.gravity;
+                            this.state.vx *= this.options.friction;
+                            this.state.vy *= this.options.friction;
+
+                            this.state.x += this.state.vx;
+                            this.state.y += this.state.vy;
+                            this.state.angle += this.state.vx * 0.5;
+
+                            // Floor collision
+                            const rect = this.el.getBoundingClientRect();
+                            // Approximate floor relative to element's current transform
+                            // This is tricky because 'y' is translate, not absolute.
+                            // Let's just use a fixed large number for "off screen" or window height relative to start
+                            // Actually, let's just let them fall off screen if they are detachable buttons?
+                            // Or bounce off bottom of screen.
+
+                            // Calculate distance to bottom of screen from initial position
+                            // initialRect.top + y + height > window.innerHeight
+                            // We need initial position.
+                            // But we don't have it easily without reading DOM.
+                            // Let's just use a "local floor" of 500px down for fun.
+                            // Or better:
+                            const floorDist =
+                                window.innerHeight -
+                                100 -
+                                (this.el.getBoundingClientRect().top -
+                                    this.state.y);
+
+                            if (this.state.y > floorDist) {
+                                this.state.y = floorDist;
+                                this.state.vy *= -0.5;
+                                this.state.vx *= 0.8;
+                                this.state.vAngle *= 0.8;
+                            }
+                        }
+                    }
+
+                    this.el.style.transform = `translate(${this.state.x}px, ${this.state.y}px) rotate(${this.state.angle}deg)`;
+                }
+            }
+
+            document.addEventListener("astro:page-load", () => {
+                const system = new PhysicsSystem();
+
+                // Register Sign
+                const sign = document.getElementById("sign-board");
+                if (sign) {
+                    system.register(sign, {
+                        canDetach: true,
+                        baseAngle: -1,
+                        snapDistance: 150,
+                    });
+                }
+
+                // Register Cards and Buttons
+                const interactables = document.querySelectorAll(
+                    ".pixel-card, .pixel-btn",
+                );
+                interactables.forEach((el) => {
+                    // Don't register the sign again if it has pixel-card class
+                    if (el.id === "sign-board") return;
+
+                    system.register(el as HTMLElement, {
+                        canDetach: false, // Keep UI usable
+                        spring: 0.15, // Stiffer spring for UI elements
+                        damping: 0.7,
+                        baseAngle: 0,
+                    });
+                });
+            });
+        </script>
     </body>
 </html>
