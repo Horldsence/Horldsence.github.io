@@ -85,9 +85,11 @@ const { title } = Astro.props;
 
         <script>
             class PhysicsSystem {
-                items: Set<any>;
+                items: Set<PhysicsItem>;
                 mouseX: number;
                 mouseY: number;
+                smoothMouseX: number;
+                smoothMouseY: number;
 
                 animationFrameId: number;
                 boundMouseMove: (e: MouseEvent) => void;
@@ -99,6 +101,8 @@ const { title } = Astro.props;
                     this.items = new Set();
                     this.mouseX = 0;
                     this.mouseY = 0;
+                    this.smoothMouseX = 0;
+                    this.smoothMouseY = 0;
                     this.animationFrameId = 0;
 
                     this.boundMouseMove = (e) => {
@@ -108,7 +112,6 @@ const { title } = Astro.props;
                             if (item.state.isDragging)
                                 item.onMove(e.clientX, e.clientY);
                         });
-                        this.updateShadows();
                     };
 
                     this.boundTouchMove = (e) => {
@@ -119,7 +122,6 @@ const { title } = Astro.props;
                             if (item.state.isDragging)
                                 item.onMove(t.clientX, t.clientY);
                         });
-                        this.updateShadows();
                     };
 
                     this.boundMouseUp = () => {
@@ -167,7 +169,21 @@ const { title } = Astro.props;
                     return item;
                 }
 
-                updateShadows() {
+                updateGlobalEffects() {
+                    // Smooth mouse tracking
+                    this.smoothMouseX +=
+                        (this.mouseX - this.smoothMouseX) * 0.1;
+                    this.smoothMouseY +=
+                        (this.mouseY - this.smoothMouseY) * 0.1;
+
+                    // Background movement
+                    const cx = window.innerWidth / 2;
+                    const cy = window.innerHeight / 2;
+                    const bgX = (this.smoothMouseX - cx) * 0.02;
+                    const bgY = (this.smoothMouseY - cy) * 0.02;
+
+                    document.body.style.backgroundPosition = `${50 + bgX * 0.1}% ${50 + bgY * 0.1}%`;
+
                     const elements = document.querySelectorAll(
                         ".pixel-card, .pixel-shadow, .prose pre, .pixel-btn",
                     );
@@ -177,12 +193,12 @@ const { title } = Astro.props;
                         const centerX = rect.left + rect.width / 2;
                         const centerY = rect.top + rect.height / 2;
 
-                        const dx = centerX - this.mouseX;
-                        const dy = centerY - this.mouseY;
+                        const dx = centerX - this.smoothMouseX;
+                        const dy = centerY - this.smoothMouseY;
 
                         // Enhanced shadow calculation
-                        const maxShadow = 15; // Modified to 15
-                        const sensitivity = 10; // Lower is more sensitive
+                        const maxShadow = 12;
+                        const sensitivity = 15;
 
                         let sx = dx / sensitivity;
                         let sy = dy / sensitivity;
@@ -205,7 +221,10 @@ const { title } = Astro.props;
                 }
 
                 loop() {
-                    this.items.forEach((item) => item.update());
+                    this.updateGlobalEffects();
+                    this.items.forEach((item) =>
+                        item.update(this.smoothMouseX, this.smoothMouseY),
+                    );
                     this.animationFrameId = requestAnimationFrame(() =>
                         this.loop(),
                     );
@@ -223,10 +242,10 @@ const { title } = Astro.props;
                         {
                             canDetach: false,
                             snapDistance: 100,
-                            gravity: 0.8,
-                            friction: 0.92,
-                            spring: 0.1,
-                            damping: 0.8,
+                            gravity: 0.6,
+                            friction: 0.94,
+                            spring: 0.05, // Softer spring for calm return
+                            damping: 0.82, // Adjusted damping
                             baseAngle: 0,
                         },
                         options,
@@ -244,13 +263,18 @@ const { title } = Astro.props;
                         dragOffsetX: 0,
                         dragOffsetY: 0,
                         hasDragged: false,
+                        scale: 1,
+                        targetScale: 1,
+                        parallaxX: 0,
+                        parallaxY: 0,
                     };
 
                     // Initialize styles
-                    this.el.style.transformOrigin = "50% 10%";
+                    this.el.style.transformOrigin = "50% 50%";
                     this.el.style.cursor = "grab";
                     this.el.style.userSelect = "none";
                     this.el.style.touchAction = "none";
+                    this.el.style.willChange = "transform";
 
                     this.initEvents();
                 }
@@ -262,6 +286,7 @@ const { title } = Astro.props;
                         this.state.hasDragged = false;
                         this.state.dragOffsetX = clientX - this.state.x;
                         this.state.dragOffsetY = clientY - this.state.y;
+                        this.state.targetScale = 0.98; // Subtle press effect
                         this.el.style.cursor = "grabbing";
                         this.el.style.zIndex = "50"; // Bring to front
                     };
@@ -294,8 +319,14 @@ const { title } = Astro.props;
                     // Hover disturbance
                     this.el.addEventListener("mouseenter", () => {
                         if (this.state.isHanging && !this.state.isDragging) {
-                            this.state.vAngle += (Math.random() - 0.5) * 15;
-                            this.state.vx += (Math.random() - 0.5) * 5;
+                            // Very subtle lift
+                            this.state.targetScale = 1.01;
+                        }
+                    });
+
+                    this.el.addEventListener("mouseleave", () => {
+                        if (!this.state.isDragging) {
+                            this.state.targetScale = 1;
                         }
                     });
                 }
@@ -311,14 +342,11 @@ const { title } = Astro.props;
 
                     this.state.x = clientX - this.state.dragOffsetX;
                     this.state.y = clientY - this.state.dragOffsetY;
-
-                    // Calculate velocity for throw
-                    // Simple smoothing
-                    // this.state.vx = ... (handled in update for simplicity or here)
                 }
 
                 onUp() {
                     this.state.isDragging = false;
+                    this.state.targetScale = 1;
                     this.el.style.cursor = "grab";
                     this.el.style.zIndex = "";
 
@@ -338,44 +366,39 @@ const { title } = Astro.props;
                     }
                 }
 
-                update() {
+                update(mouseX: number, mouseY: number) {
+                    // Scale animation
+                    this.state.scale +=
+                        (this.state.targetScale - this.state.scale) * 0.15;
+
                     if (this.state.isDragging) {
-                        // Track velocity while dragging
-                        // We need 'lastX' logic or just infer from movement
-                        // For simplicity, let's just let it be 0 or calculate simple delta
-                        // But to throw, we need history.
-                        // Let's just use a simple decay if we don't track history,
-                        // OR, better:
-                        // We can't easily calculate velocity inside 'update' if 'onMove' isn't called every frame.
-                        // Let's just add a 'targetX' in onMove and lerp to it?
-                        // No, let's just use the previous position in update.
-
-                        // Actually, let's just set velocity to 0 while dragging for stability,
-                        // and calculate "throw velocity" based on recent movement if we wanted.
-                        // For now, let's just give it a little spin on release based on position change?
-                        // Or just let it drop.
-
-                        // To make it feel good, we need velocity.
-                        // Let's store last pos.
                         if (this.state.lastX !== undefined) {
-                            this.state.vx = this.state.x - this.state.lastX;
-                            this.state.vy = this.state.y - this.state.lastY;
+                            this.state.vx =
+                                (this.state.x - this.state.lastX) * 0.8; // Smooth velocity
+                            this.state.vy =
+                                (this.state.y - this.state.lastY) * 0.8;
                         }
                         this.state.lastX = this.state.x;
                         this.state.lastY = this.state.y;
 
                         // Tilt while dragging
-                        const targetAngle = this.state.vx * 1.5;
+                        const targetAngle = this.state.vx * 0.8; // Reduced tilt
                         this.state.angle +=
-                            (targetAngle - this.state.angle) * 0.2;
+                            (targetAngle - this.state.angle) * 0.15;
                     } else {
                         this.state.lastX = this.state.x;
                         this.state.lastY = this.state.y;
 
                         if (this.state.isHanging) {
-                            // Spring to 0,0
-                            const ax = (0 - this.state.x) * this.options.spring;
-                            const ay = (0 - this.state.y) * this.options.spring;
+                            // Spring to 0,0 (No parallax)
+                            const targetX = 0;
+                            const targetY = 0;
+
+                            // Spring to target
+                            const ax =
+                                (targetX - this.state.x) * this.options.spring;
+                            const ay =
+                                (targetY - this.state.y) * this.options.spring;
 
                             this.state.vx += ax;
                             this.state.vy += ay;
@@ -388,8 +411,8 @@ const { title } = Astro.props;
                             // Angular spring to baseAngle
                             this.state.vAngle +=
                                 (this.options.baseAngle - this.state.angle) *
-                                0.1;
-                            this.state.vAngle *= 0.9;
+                                0.08;
+                            this.state.vAngle *= 0.85;
                             this.state.angle += this.state.vAngle;
                         } else {
                             // Free fall
@@ -402,19 +425,6 @@ const { title } = Astro.props;
                             this.state.angle += this.state.vx * 0.5;
 
                             // Floor collision
-                            const rect = this.el.getBoundingClientRect();
-                            // Approximate floor relative to element's current transform
-                            // This is tricky because 'y' is translate, not absolute.
-                            // Let's just use a fixed large number for "off screen" or window height relative to start
-                            // Actually, let's just let them fall off screen if they are detachable buttons?
-                            // Or bounce off bottom of screen.
-
-                            // Calculate distance to bottom of screen from initial position
-                            // initialRect.top + y + height > window.innerHeight
-                            // We need initial position.
-                            // But we don't have it easily without reading DOM.
-                            // Let's just use a "local floor" of 500px down for fun.
-                            // Or better:
                             const floorDist =
                                 window.innerHeight -
                                 100 -
@@ -430,7 +440,7 @@ const { title } = Astro.props;
                         }
                     }
 
-                    this.el.style.transform = `translate(${this.state.x}px, ${this.state.y}px) rotate(${this.state.angle}deg)`;
+                    this.el.style.transform = `translate3d(${this.state.x}px, ${this.state.y}px, 0) rotate(${this.state.angle}deg) scale(${this.state.scale})`;
                 }
             }
 
