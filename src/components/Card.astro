@@ -8,9 +8,18 @@ interface Props {
     icon?: string;
     tags: string[];
     rating?: number;
+    slug: string;
 }
 
-const { href, title, description, icon = "💾", tags, rating = 0 } = Astro.props;
+const {
+    href,
+    title,
+    description,
+    icon = "💾",
+    tags,
+    rating = 0,
+    slug,
+} = Astro.props;
 ---
 
 <a href={href} class="block group">
@@ -20,6 +29,7 @@ const { href, title, description, icon = "💾", tags, rating = 0 } = Astro.prop
         <div class="flex items-start justify-between mb-4">
             <div
                 class="text-4xl bg-retro-beige dark:bg-retro-green p-2 border-2 border-retro-dark dark:border-retro-beige shadow-sm transition-colors"
+                transition:name={`icon-${slug}`}
             >
                 {icon}
             </div>

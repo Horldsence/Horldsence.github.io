@@ -64,6 +64,7 @@ const allTags = [
                             icon={item.data.icon}
                             tags={item.data.tags}
                             rating={item.data.rating}
+                            slug={item.slug}
                         />
                     </div>
                 ))
@@ -132,11 +133,29 @@ const allTags = [
 
                 if (isVisible) {
                     item.classList.remove("hidden");
-                    item.classList.add("animate-fade-in");
+                    item.classList.remove("animate-scale-out");
+                    item.classList.add("animate-pop-in");
                     visibleCount++;
                 } else {
-                    item.classList.add("hidden");
-                    item.classList.remove("animate-fade-in");
+                    // Only animate out if it's not already hidden
+                    if (!item.classList.contains("hidden")) {
+                        item.classList.remove("animate-pop-in");
+                        item.classList.add("animate-scale-out");
+
+                        // Wait for animation to finish before hiding
+                        item.addEventListener(
+                            "animationend",
+                            () => {
+                                if (
+                                    item.classList.contains("animate-scale-out")
+                                ) {
+                                    item.classList.add("hidden");
+                                    item.classList.remove("animate-scale-out");
+                                }
+                            },
+                            { once: true },
+                        );
+                    }
                 }
             });
 

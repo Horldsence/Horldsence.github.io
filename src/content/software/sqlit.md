@@ -6,7 +6,7 @@ pubDate: 2025-12-19
 rating: 4.0
 tags: ["sql", "tui", "database-tool", "python", "postgresql", "mysql", "sqlite", "developer-tools", "cli-tool", "terminal"]
 repoUrl: "https://github.com/Maxteabag/sqlit"
-downloadUrl: "uv tool install sqlit-tui"
+downloadUrl: "https://pypi.org/project/sqlit-tui/"
 icon: "📼"
 ---
 
@@ -27,4 +27,4 @@ icon: "📼"
 
 运行 `uv tool install sqlit-tui`
 
-![Screenshot](https://github.com/Maxteabag/sqlit/blob/main/demos/demo-providers.gif)
+![Screenshot](sqlit.png)

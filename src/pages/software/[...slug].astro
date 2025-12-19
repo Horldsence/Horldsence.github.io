@@ -28,6 +28,7 @@ const { Content } = await entry.render();
             <div class="flex flex-col md:flex-row gap-8 items-start">
                 <div
                     class="text-8xl bg-retro-beige dark:bg-retro-green p-4 border-4 border-retro-dark dark:border-retro-beige shadow-md transition-colors"
+                    transition:name={`icon-${entry.slug}`}
                 >
                     {entry.data.icon || "💾"}
                 </div>

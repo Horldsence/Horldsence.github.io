@@ -2,11 +2,11 @@
 title: "w3m"
 description: "A text-based terminal web browser. Lightweight, fast, and supports tables, frames, and mouse operations."
 version: "0.5.3"
-pubDate: "2025-12-19"
+pubDate: 2025-12-19
 rating: 4.0
 tags: ["terminal", "browser", "text-browser", "cli", "web", "lightweight", "productivity"]
 repoUrl: "https://github.com/tats/w3m"
-downloadUrl: "apt install w3m  # 或使用系统的包管理器，如 brew, yum, pacman"
+downloadUrl: "https://w3m.sourceforge.net/"
 icon: "🌐"
 ---
 
