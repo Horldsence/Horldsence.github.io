@@ -4,7 +4,7 @@ description: "A command-line fuzzy finder. Fast, portable, and integrates with B
 version: "0.56.3"
 pubDate: 2026-01-20
 rating: 5.0
-tags: ["terminal", "fuzzy-finder", "productivity", "cli-tool", "shell-integration", "developer-tools", "search", "vim", "neovim"]
+tags: ["fuzzy-search", "terminal", "shell"]
 repoUrl: "https://github.com/junegunn/fzf"
 downloadUrl: "https://github.com/junegunn/fzf/releases"
 icon: "🔍"

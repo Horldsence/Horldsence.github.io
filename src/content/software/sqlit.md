@@ -4,7 +4,7 @@ description: "A user friendly TUI for SQL databases. Written in python. Supports
 version: "1.0.1"
 pubDate: 2025-12-19
 rating: 4.0
-tags: ["sql", "tui", "database-tool", "python", "postgresql", "mysql", "sqlite", "developer-tools", "cli-tool", "terminal"]
+tags: ["database", "terminal", "sql"]
 repoUrl: "https://github.com/Maxteabag/sqlit"
 downloadUrl: "https://pypi.org/project/sqlit-tui/"
 icon: "📼"

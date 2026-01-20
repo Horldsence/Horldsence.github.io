@@ -4,7 +4,7 @@ description: "A privacy-first, cross-platform text expander. Type shortcuts and 
 version: "2.3.0"
 pubDate: 2026-01-20
 rating: 4.5
-tags: ["text-expander", "productivity", "automation", "cross-platform", "rust", "privacy", "cli-tool", "developer-tools"]
+tags: ["text-expander", "automation", "input"]
 repoUrl: "https://github.com/espanso/espanso"
 downloadUrl: "https://espanso.org/install/"
 icon: "⚡"

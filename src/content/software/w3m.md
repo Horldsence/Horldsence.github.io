@@ -4,7 +4,7 @@ description: "A text-based terminal web browser. Lightweight, fast, and supports
 version: "0.5.3"
 pubDate: 2025-12-19
 rating: 4.0
-tags: ["terminal", "browser", "text-browser", "cli", "web", "lightweight", "productivity"]
+tags: ["browser", "terminal", "web"]
 repoUrl: "https://github.com/tats/w3m"
 downloadUrl: "https://w3m.sourceforge.net/"
 icon: "🌐"

@@ -4,7 +4,7 @@ description: "A fast, line-oriented search tool that recursively searches direct
 version: "14.1.1"
 pubDate: 2026-01-20
 rating: 5.0
-tags: ["search", "grep", "cli-tool", "terminal", "developer-tools", "productivity", "rust", "regex"]
+tags: ["search", "terminal", "code"]
 repoUrl: "https://github.com/BurntSushi/ripgrep"
 downloadUrl: "https://github.com/BurntSushi/ripgrep/releases"
 icon: "🔎"

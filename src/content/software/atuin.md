@@ -4,7 +4,7 @@ description: "Magical shell history manager. Replaces shell history with SQLite 
 version: "18.11.0"
 pubDate: 2026-01-20
 rating: 5.0
-tags: ["shell", "history", "cli-tool", "rust", "encryption", "sync", "zsh", "bash", "fish", "developer-tools", "productivity"]
+tags: ["shell-history", "sync", "encryption"]
 repoUrl: "https://github.com/atuinsh/atuin"
 downloadUrl: "https://atuin.sh/"
 icon: "📜"
